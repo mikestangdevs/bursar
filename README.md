@@ -8,6 +8,12 @@ out instead of showing up on next month's bill.
 Built on **Hermes** (Nous Research), with **NVIDIA Nemotron** as the valuation
 brain and **Stripe** as the settlement rail.
 
+## Demo
+
+<video src="https://github.com/mikestangdevs/bursar/raw/main/docs/demo.mp4" poster="https://github.com/mikestangdevs/bursar/raw/main/docs/demo-poster.png" autoplay loop muted playsinline controls width="100%">
+  <a href="https://github.com/mikestangdevs/bursar/raw/main/docs/demo.mp4">▶️ Watch the Bursar demo — every query priced, deduped, routed, and settled, live inside Hermes</a>
+</video>
+
 ---
 
 ## The problem
