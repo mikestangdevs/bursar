@@ -10,6 +10,7 @@ brain and **Stripe** as the settlement rail.
 
 ## Demo
 https://github.com/user-attachments/assets/081c26c3-613e-4751-80e5-1406a2a44ade
+
 ---
 
 ## The problem
