@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bursar — The Internal Compute Exchange</title>
+<meta name="description" content="FinOps for the AI era. Bursar prices, dedups, ranks by value-per-token, and charges back every LLM query against a hard budget — before it runs. Built on Hermes. Settled through Stripe." />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="fonts.css" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2300C24A'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='22' fill='%23F5F5F5' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <a class="nav-left" href="#stack">Built on Hermes</a>
+  <a class="nav-left2" href="#features">How it works</a>
+  <div class="brand">
+    <span class="b1">BURSAR</span>
+    <span class="b2">EXCHANGE</span>
+    <div class="socials">
+      <a href="#" aria-label="Discord"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.3.5a18.3 18.3 0 0 1 4.3 1.4A18.8 18.8 0 0 0 5 4.8 18 18 0 0 1 8.9 3.4L8.6 3a19.9 19.9 0 0 0-4.9 1.5A20.3 20.3 0 0 0 .5 18.6a20 20 0 0 0 6 3l.4-.6c-1-.3-2-.7-2.8-1.3l.7-.5a14.3 14.3 0 0 0 12.4 0l.7.5c-.9.6-1.9 1-2.9 1.3l.4.6a20 20 0 0 0 6-3 20.2 20.2 0 0 0-3.2-14.2zM8.5 15c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm7 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2z"/></svg></a>
+      <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.3-.5-1.5.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 5 18.3 5.3 18.3 5.3c.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.5.3.8 1 .8 2.1v3.1c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg></a>
+    </div>
+  </div>
+  <a class="nav-right2" href="#floor">Trading Floor</a>
+  <a class="nav-right" href="#run">Run the Floor →</a>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="hero-label mono">FinOps for the AI Era • Nous × NVIDIA × Stripe</div>
+      <h1 class="display">PRICE EVERY<br>TOKEN BEFORE<br>IT BURNS</h1>
+      <p class="hero-sub mono">A trading floor for your company's compute. Every query is priced, deduped, ranked by value-per-token, and settled against a hard budget — <em>before</em> it runs.</p>
+      <span class="label-tiny mono">Install on your Hermes — one line, no fork</span>
+      <button class="btn-install" id="installBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+        See the Trading Floor
+      </button>
+      <div class="terminal">
+        <div class="tabs">
+          <span class="tab" data-mode="install">Install</span>
+          <span class="tab inactive" data-mode="run">Run a tick</span>
+        </div>
+        <div class="cmd">
+          <code id="cmdText">curl -fsSL https://bursar-hermes.com/install.sh | bash</code>
+          <span class="copy" id="copyBtn" title="Copy">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="1"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></svg>
+          </span>
+        </div>
+        <div class="cmd-note mono-sm">Drops a "Trading Floor" tab into any stock Hermes · prebuilt, no build step</div>
+      </div>
+    </div>
+    <div class="hero-art">
+      <img src="img/hero-art.webp" alt="Classical engraving — the bursar weighing value against cost" />
+    </div>
+  </div>
+</header>
+
+<!-- TRADING FLOOR SHOWCASE -->
+<section class="showcase" id="floor">
+  <div class="wrap">
+    <div class="frame">
+      <div class="topbar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="tt">Bursar — Trading Floor · clearing the market</span>
+      </div>
+      <div class="body">
+        <aside class="sidebar">
+          <div class="si">+ New tick</div>
+          <div class="si active">Trading Floor</div>
+          <div class="si">Ledger</div>
+          <div class="si">Budgets</div>
+          <div class="si">Routing &amp; Catalog</div>
+          <div class="sh">Lanes</div>
+          <div class="si">Serviced · 297</div>
+          <div class="si">Deduped · 65</div>
+          <div class="si">Down-routed · 124</div>
+          <div class="si">Rejected · 15</div>
+          <div class="sh">Source</div>
+          <div class="si">Simulated firehose</div>
+          <div class="si">Live · Hermes traffic</div>
+        </aside>
+        <div class="floor">
+          <div class="floor-head">
+            <span class="mono-sm">ORDER FEED — value-per-token, highest first</span>
+            <span class="mono-sm live-pill"><i></i>LIVE</span>
+          </div>
+          <div class="feed">
+            <div class="row">
+              <span class="badge serviced">SERVICED</span>
+              <span class="q">Reconcile Q2 revenue against the GL export</span>
+              <span class="model">claude-opus-4-8</span>
+              <span class="vpt">vpt 8.4</span>
+            </div>
+            <div class="row">
+              <span class="badge routed">ROUTED ↓</span>
+              <span class="q">Tag these 400 support tickets by intent</span>
+              <span class="model">gpt-4.1-nano</span>
+              <span class="vpt">vpt 22.1</span>
+            </div>
+            <div class="row">
+              <span class="badge dedup">DEDUP</span>
+              <span class="q">What's our refund policy for EU customers?</span>
+              <span class="model">cache · $0.00</span>
+              <span class="vpt">served free</span>
+            </div>
+            <div class="row">
+              <span class="badge serviced">SERVICED</span>
+              <span class="q">Draft the board memo on the pricing change</span>
+              <span class="model">claude-opus-4-8</span>
+              <span class="vpt">vpt 6.9</span>
+            </div>
+            <div class="row">
+              <span class="badge routed">ROUTED ↓</span>
+              <span class="q">Summarize this 9k-token meeting transcript</span>
+              <span class="model">claude-haiku-4-5</span>
+              <span class="vpt">vpt 14.7</span>
+            </div>
+            <div class="row">
+              <span class="badge rejected">REJECTED</span>
+              <span class="q">Re-run the same vibe-check for the 6th time</span>
+              <span class="model">worth &lt; fee</span>
+              <span class="vpt">priced out</span>
+            </div>
+          </div>
+          <div class="floor-summary">
+            <div class="stat"><span class="big" id="billNum">$41.13</span><span class="cap mono-sm">SETTLED THIS TICK</span></div>
+            <div class="stat"><span class="big strike">$281.07</span><span class="cap mono-sm">NAÏVE — BEST MODEL FOR ALL</span></div>
+            <div class="stat"><span class="big accent" id="cutNum">85%</span><span class="cap mono-sm">SPEND CUT · RECONCILES TO THE CENT</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="footnote"><span>Bursar Trading Floor · settled through Stripe</span><span>Hard budget $42.00 · gate held pre-execution</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- THE NUMBERS -->
+<section class="downloads" id="numbers">
+  <div class="wrap">
+    <div class="section-kicker mono">The problem, in three numbers</div>
+    <div class="grid">
+      <div class="dl-card">
+        <span class="os-label mono-sm">Enterprise AI budgets</span>
+        <h2>$1.2M&nbsp;→&nbsp;$7M</h2>
+        <p class="dl-note mono-sm">Average annual spend, 2024 → 2026. Token consumption is up 13× since Jan 2025 — and the alerts still fire <em>after</em> the money's gone.</p>
+      </div>
+      <div class="dl-card">
+        <span class="os-label mono-sm">Near-duplicate queries</span>
+        <h2>~31%</h2>
+        <p class="dl-note mono-sm">Of production queries are near-duplicates — frontier prices paid to answer the same question five different ways. Research puts 50–90% of inference spend as waste.</p>
+      </div>
+      <div class="dl-card">
+        <span class="os-label mono-sm">What Bursar recovers</span>
+        <h2>85%</h2>
+        <p class="dl-note mono-sm">Spend cut on a 400-query tick — $41.13 settled versus $281.07 naïve — every dollar reconciling bill = ledger = Stripe, to the cent.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES (white) -->
+<section class="features" id="features">
+  <div class="features-head">
+    <div class="toggle"><span class="on">The Loop</span><span>Pre-execution</span></div>
+  </div>
+  <div class="feat-grid">
+    <div class="feat">
+      <span class="num mono-sm">#1 Price</span>
+      <h3 class="display">QUOTED<br>BEFORE IT<br>RUNS</h3>
+      <img class="feat-img" src="img/feature-connect.webp" alt="" />
+      <p>Every query is costed at real, sourced market rates — pulled live from Hermes's own pricing snapshot. 28 models, a 528× price spread, no fantasy numbers.</p>
+    </div>
+    <div class="feat">
+      <span class="num mono-sm">#2 Dedup</span>
+      <h3 class="display">WASTE<br>STARVES<br>ITSELF</h3>
+      <img class="feat-img" src="img/feature-memory.webp" alt="" />
+      <p>Ask it again and Bursar reuses the earlier <em>work</em> — handing the agent the prior answer as context for one cheap call instead of redoing the whole lookup. It re-verifies the files that answer touched by hash at zero tokens, so reuse stays current and never stale. The 31% never gets paid for twice.</p>
+    </div>
+    <div class="feat">
+      <span class="num mono-sm">#3 Rank</span>
+      <h3 class="display">VALUE PER<br>TOKEN<br>FIRST</h3>
+      <img class="feat-img" src="img/feature-tasks.webp" alt="" />
+      <p>The dispatcher fills the budget highest value-per-token first — a knapsack market, like a trading desk allocating scarce capital. Best queries clear first.</p>
+    </div>
+    <div class="feat">
+      <span class="num mono-sm">#4 Gate</span>
+      <h3 class="display">A HARD<br>BUDGET, PRE-<br>EXECUTION</h3>
+      <img class="feat-img" src="img/feature-automation.webp" alt="" />
+      <p>Per-team tranches with caps that hold <em>before</em> the call is made. A tranche can never be overspent. The overrun doesn't happen — it can't.</p>
+    </div>
+    <div class="feat">
+      <span class="num mono-sm">#5 Route</span>
+      <h3 class="display">CHEAPEST<br>MODEL THAT<br>CLEARS</h3>
+      <img class="feat-img" src="img/feature-browse.webp" alt="" />
+      <p>Trivia goes to nano; high-stakes goes to the frontier. Bursar routes to the cheapest model that meets the value tier's bar — killing the "best model for everything" tax.</p>
+    </div>
+    <div class="feat">
+      <span class="num mono-sm">#6 Settle</span>
+      <h3 class="display">A REAL<br>SETTLEMENT<br>LEDGER</h3>
+      <img class="feat-img" src="img/feature-sandbox.webp" alt="" />
+      <p>Every serviced query meters a Stripe trading fee — the metering rail <em>and</em> the throttle. A query whose worth can't clear its cost plus fee is priced out.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE GOVERNANCE BAND -->
+<section class="band" id="live">
+  <div class="wrap band-grid">
+    <div class="band-copy">
+      <span class="num mono-sm">Live integration · zero core fork</span>
+      <h2 class="display">IT GOVERNS YOUR<br>REAL TRAFFIC</h2>
+      <p class="mono">Bursar isn't just a simulator. A native Hermes agent plugin sits in the LLM execution path of your real chats, subagents, and tool calls — observing, pricing, deduping, and down-routing live. Arm it with a single shield toggle.</p>
+    </div>
+    <ul class="band-list mono">
+      <li><span class="k">Fail-open by construction</span> — the gate can never block your own work. If Bursar errors, the call goes through.</li>
+      <li><span class="k">Reuse the work, not just the answer</span> — a repeat hands the agent the prior answer as context and re-verifies the files it touched by hash at zero tokens — so it skips the redundant lookup, stays current, and reports what changed.</li>
+      <li><span class="k">Down-route &amp; budget-stop</span> — shown as "would-have" until you opt in, so nothing surprises you in production.</li>
+      <li><span class="k">Shared state lights the floor</span> — real turns appear on the Trading Floor instantly over a live WebSocket.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- BIG WORDMARK -->
+<section class="wordmark"><h2 class="display">BURSAR</h2></section>
+
+<!-- THE STACK / CLOSING -->
+<section class="portal" id="stack">
+  <div class="head wrap">
+    <div class="tiers mono">Nemotron • Stripe • Hermes • Nous</div>
+    <h2 class="display">THE EXCHANGE</h2>
+    <p class="sub">One job per rail. NVIDIA's Nemotron values and routes on-prem — your prompts never leave your walls. Stripe settles the ledger. Hermes orchestrates. Bursar is the market between them.</p>
+    <a class="plans-btn" href="#run" id="floorCta">Open the Trading Floor</a>
+  </div>
+  <div class="ghost-word"><span>BURSAR</span><span>EXCHANGE</span></div>
+  <div class="figure"><img src="img/portal-figure.webp" alt="A figure weighing a glowing sphere of value" /></div>
+  <div class="corner left" id="run">Bursar · the internal compute exchange</div>
+  <div class="corner right">
+    <svg class="badge" viewBox="0 0 42 52" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="1" width="40" height="50"/><text x="21" y="20" font-family="Georgia,serif" font-size="11" fill="currentColor" text-anchor="middle" stroke="none">B</text><circle cx="21" cy="36" r="8"/></svg>
+    Built on Hermes<br>Nous · NVIDIA · Stripe
+  </div>
+</section>
+
+<script src="main.js"></script>
+</body>
+</html>

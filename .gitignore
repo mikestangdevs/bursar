@@ -1,0 +1,37 @@
+# --- secrets: never commit ---
+.env
+.env.*
+*.env
+**/.env
+*.pem
+*.key
+*secret*
+*credential*
+
+# --- python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# --- node / build ---
+node_modules/
+*.log
+.DS_Store
+
+# --- local runtime state (the live exchange DB + caches live in ~/.hermes) ---
+bursar.db
+bursar.db-*
+*.sqlite
+*.sqlite-*
+
+# --- packaged bundle artifact (rebuild with plugin/package.sh upstream) ---
+*.tar.gz
+
+# --- /brag render output (video + scratch work dir; host the mp4 separately) ---
+brag-output/
+brag-output-*/
+
+# local hosting build (deploy to Vercel; never commit)
+deploy/

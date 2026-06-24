@@ -1,0 +1,598 @@
+diff --git a/apps/desktop/package.json b/apps/desktop/package.json
+index 08080188a5..997d9b68d5 100644
+--- a/apps/desktop/package.json
++++ b/apps/desktop/package.json
+@@ -90,6 +90,7 @@
+     "react-dom": "^19.2.5",
+     "react-router-dom": "^7.17.0",
+     "react-shiki": "^0.9.3",
++    "recharts": "^3.2.1",
+     "remark-math": "^6.0.0",
+     "remend": "^1.3.0",
+     "shiki": "^4.0.2",
+diff --git a/apps/desktop/src/app/chat/sidebar/index.tsx b/apps/desktop/src/app/chat/sidebar/index.tsx
+index 7f46367344..b15d9abe95 100644
+--- a/apps/desktop/src/app/chat/sidebar/index.tsx
++++ b/apps/desktop/src/app/chat/sidebar/index.tsx
+@@ -17,6 +17,7 @@ import {
+ import { useStore } from '@nanostores/react'
+ import type * as React from 'react'
+ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
++import { useLocation, useNavigate } from 'react-router-dom'
+ 
+ import { PlatformAvatar } from '@/app/messaging/platform-icon'
+ import { Button } from '@/components/ui/button'
+@@ -95,7 +96,16 @@ import {
+   sessionPinId
+ } from '@/store/session'
+ 
+-import { type AppView, ARTIFACTS_ROUTE, MESSAGING_ROUTE, SKILLS_ROUTE } from '../../routes'
++import {
++  type AppView,
++  ARTIFACTS_ROUTE,
++  BURSAR_BUDGETS_ROUTE,
++  BURSAR_LEDGER_ROUTE,
++  BURSAR_ROUTE,
++  BURSAR_ROUTING_ROUTE,
++  MESSAGING_ROUTE,
++  SKILLS_ROUTE
++} from '../../routes'
+ import { SidebarPanelLabel } from '../../shell/sidebar-label'
+ import type { SidebarNavItem } from '../../types'
+ 
+@@ -134,6 +144,99 @@ const SIDEBAR_NAV: SidebarNavItem[] = [
+   { id: 'artifacts', label: '', icon: props => <Codicon name="files" {...props} />, route: ARTIFACTS_ROUTE }
+ ]
+ 
++// Bursar's pages, in dropdown order. Trading Floor is the landing page and owns
++// the bare `/bursar` path; the rest own a `/bursar/<x>` sub-path.
++const BURSAR_PAGES = [
++  { label: 'Trading Floor', route: BURSAR_ROUTE },
++  { label: 'Ledger', route: BURSAR_LEDGER_ROUTE },
++  { label: 'Budgets', route: BURSAR_BUDGETS_ROUTE },
++  { label: 'Routing & Catalog', route: BURSAR_ROUTING_ROUTE }
++] as const
++
++// Shared with the flat SIDEBAR_NAV rows so Bursar's parent + child rows match
++// the other launcher buttons exactly (height, padding, hover/active treatment).
++const NAV_BUTTON_CLASS =
++  'flex h-7 w-full justify-start gap-2 rounded-md border border-transparent px-2 text-left text-[0.8125rem] font-medium text-(--ui-text-secondary) transition-colors duration-100 ease-out [-webkit-app-region:no-drag] hover:bg-(--ui-control-hover-background) hover:text-foreground hover:transition-none'
++const NAV_BUTTON_ACTIVE =
++  'border-(--ui-stroke-tertiary) bg-(--ui-control-active-background) text-foreground shadow-none hover:border-(--ui-stroke-tertiary)!'
++
++// Bursar lives in the sidebar as a collapsible dropdown: a parent "Bursar" row
++// that expands to its four inline pages. Clicking the row enters the lens
++// (Trading Floor); the caret toggles the page list. Auto-opens whenever the
++// user is anywhere under `/bursar`, with the active child tracking the path.
++function BursarNavGroup({ contentVisible, currentView }: { contentVisible: boolean; currentView: AppView }) {
++  const navigate = useNavigate()
++  const { pathname } = useLocation()
++  const inBursar = currentView === 'bursar'
++  const [open, setOpen] = useState(inBursar)
++
++  useEffect(() => {
++    if (inBursar) {
++      setOpen(true)
++    }
++  }, [inBursar])
++
++  const activeRoute =
++    BURSAR_PAGES.find(page => page.route !== BURSAR_ROUTE && pathname.startsWith(page.route))?.route ?? BURSAR_ROUTE
++
++  return (
++    <>
++      <SidebarMenuItem>
++        <SidebarMenuButton
++          className={cn(NAV_BUTTON_CLASS, inBursar && !contentVisible && NAV_BUTTON_ACTIVE)}
++          onClick={() => {
++            navigate(BURSAR_ROUTE)
++            setOpen(true)
++          }}
++          tooltip="Bursar"
++          type="button"
++        >
++          <Codicon className="size-4 shrink-0 text-[color-mix(in_srgb,currentColor_72%,transparent)]" name="graph" />
++          {contentVisible && (
++            <>
++              <span className="min-w-0 flex-1 truncate">Bursar</span>
++              <span
++                aria-label={open ? 'Collapse Bursar pages' : 'Expand Bursar pages'}
++                className="-mr-1 grid size-5 shrink-0 place-items-center rounded text-(--ui-text-tertiary) transition-colors hover:bg-(--ui-control-hover-background) hover:text-foreground"
++                onClick={event => {
++                  event.stopPropagation()
++                  setOpen(value => !value)
++                }}
++                role="button"
++              >
++                <DisclosureCaret open={open} />
++              </span>
++            </>
++          )}
++        </SidebarMenuButton>
++      </SidebarMenuItem>
++
++      {contentVisible &&
++        open &&
++        BURSAR_PAGES.map(page => {
++          const active = inBursar && page.route === activeRoute
++
++          return (
++            <SidebarMenuItem key={page.route}>
++              <SidebarMenuButton
++                className={cn(
++                  NAV_BUTTON_CLASS,
++                  'pl-9 text-[0.78rem] font-normal text-(--ui-text-tertiary)',
++                  active && NAV_BUTTON_ACTIVE
++                )}
++                onClick={() => navigate(page.route)}
++                tooltip={page.label}
++                type="button"
++              >
++                <span className="min-w-0 flex-1 truncate">{page.label}</span>
++              </SidebarMenuButton>
++            </SidebarMenuItem>
++          )
++        })}
++    </>
++  )
++}
++
+ const WORKSPACE_PAGE = 5
+ // ALL-profiles view: show only the latest N per profile up front to keep the
+ // unified list scannable, then reveal/fetch more in N-sized steps on demand.
+@@ -869,6 +972,7 @@ export function ChatSidebar({
+                   </SidebarMenuItem>
+                 )
+               })}
++              <BursarNavGroup contentVisible={contentVisible} currentView={currentView} />
+             </SidebarMenu>
+           </SidebarGroupContent>
+         </SidebarGroup>
+diff --git a/apps/desktop/src/app/command-palette/index.tsx b/apps/desktop/src/app/command-palette/index.tsx
+index 19ea797634..a6e0daeecc 100644
+--- a/apps/desktop/src/app/command-palette/index.tsx
++++ b/apps/desktop/src/app/command-palette/index.tsx
+@@ -15,6 +15,7 @@ import {
+   Activity,
+   Archive,
+   BarChart3,
++  CandlestickChart,
+   ChevronLeft,
+   ChevronRight,
+   Clock,
+@@ -48,6 +49,7 @@ import { isUserTheme, resolveTheme } from '@/themes/user-themes'
+ import {
+   AGENTS_ROUTE,
+   ARTIFACTS_ROUTE,
++  BURSAR_ROUTE,
+   COMMAND_CENTER_ROUTE,
+   CRON_ROUTE,
+   MESSAGING_ROUTE,
+@@ -280,6 +282,13 @@ export function CommandPalette() {
+       {
+         heading: cc.goTo,
+         items: [
++          {
++            icon: CandlestickChart,
++            id: 'nav-bursar',
++            keywords: ['bursar', 'trading floor', 'finops', 'exchange', 'ledger', 'budgets', 'routing', 'spend'],
++            label: 'Bursar',
++            run: go(BURSAR_ROUTE)
++          },
+           {
+             action: 'session.new',
+             icon: Plus,
+diff --git a/apps/desktop/src/app/desktop-controller.tsx b/apps/desktop/src/app/desktop-controller.tsx
+index 45251ceef9..c7531663f9 100644
+--- a/apps/desktop/src/app/desktop-controller.tsx
++++ b/apps/desktop/src/app/desktop-controller.tsx
+@@ -127,6 +127,7 @@ import { UpdatesOverlay } from './updates-overlay'
+ 
+ const AgentsView = lazy(async () => ({ default: (await import('./agents')).AgentsView }))
+ const ArtifactsView = lazy(async () => ({ default: (await import('./artifacts')).ArtifactsView }))
++const BursarView = lazy(async () => ({ default: (await import('./bursar')).BursarView }))
+ const CommandCenterView = lazy(async () => ({ default: (await import('./command-center')).CommandCenterView }))
+ const CronView = lazy(async () => ({ default: (await import('./cron')).CronView }))
+ const MessagingView = lazy(async () => ({ default: (await import('./messaging')).MessagingView }))
+@@ -321,6 +322,23 @@ export function DesktopController() {
+     return () => unsubscribe?.()
+   }, [])
+ 
++  // Bursar dedup jump-links. A dedup-served chat reply carries
++  // `hermes://session/<id>` to the conversation the original answer lives in;
++  // MarkdownLink dispatches this event on click (it's router-agnostic), and we
++  // turn it into an in-app navigation to that session.
++  useEffect(() => {
++    const onNavigateSession = (event: Event) => {
++      const sessionId = (event as CustomEvent<{ sessionId?: string }>).detail?.sessionId
++      if (sessionId) {
++        navigate(sessionRoute(sessionId))
++      }
++    }
++
++    window.addEventListener('hermes:navigate-session', onNavigateSession)
++
++    return () => window.removeEventListener('hermes:navigate-session', onNavigateSession)
++  }, [navigate])
++
+   useEffect(() => {
+     const onKeyDown = (event: KeyboardEvent) => {
+       if (!$filePreviewTarget.get() && !$previewTarget.get()) {
+@@ -1133,6 +1151,22 @@ export function DesktopController() {
+           <Route element={null} path="settings" />
+           <Route element={null} path="command-center" />
+           <Route element={null} path="agents" />
++          <Route
++            element={
++              <Suspense fallback={null}>
++                <BursarView />
++              </Suspense>
++            }
++            path="bursar"
++          />
++          <Route
++            element={
++              <Suspense fallback={null}>
++                <BursarView />
++              </Suspense>
++            }
++            path="bursar/*"
++          />
+           <Route element={<Navigate replace to={NEW_CHAT_ROUTE} />} path="new" />
+           <Route element={<LegacySessionRedirect />} path="sessions/:sessionId" />
+           <Route element={<Navigate replace to={NEW_CHAT_ROUTE} />} path="*" />
+diff --git a/apps/desktop/src/app/routes.ts b/apps/desktop/src/app/routes.ts
+index 2b655fccc8..279ad49f5a 100644
+--- a/apps/desktop/src/app/routes.ts
++++ b/apps/desktop/src/app/routes.ts
+@@ -8,10 +8,19 @@ export const ARTIFACTS_ROUTE = '/artifacts'
+ export const CRON_ROUTE = '/cron'
+ export const PROFILES_ROUTE = '/profiles'
+ export const AGENTS_ROUTE = '/agents'
++// Bursar: a multi-page product surface rendered INLINE in the desktop app's
++// main pane (Hermes chrome stays), reached via a sidebar dropdown of its pages.
++// Sub-pages live under this prefix; `appViewForPath` maps any `/bursar*` path to
++// the 'bursar' view.
++export const BURSAR_ROUTE = '/bursar'
++export const BURSAR_LEDGER_ROUTE = '/bursar/ledger'
++export const BURSAR_BUDGETS_ROUTE = '/bursar/budgets'
++export const BURSAR_ROUTING_ROUTE = '/bursar/routing'
+ 
+ export type AppView =
+   | 'agents'
+   | 'artifacts'
++  | 'bursar'
+   | 'chat'
+   | 'command-center'
+   | 'cron'
+@@ -23,6 +32,7 @@ export type AppView =
+ export type AppRouteId =
+   | 'agents'
+   | 'artifacts'
++  | 'bursar'
+   | 'command-center'
+   | 'cron'
+   | 'messaging'
+@@ -46,7 +56,8 @@ export const APP_ROUTES = [
+   { id: 'artifacts', path: ARTIFACTS_ROUTE, view: 'artifacts' },
+   { id: 'cron', path: CRON_ROUTE, view: 'cron' },
+   { id: 'profiles', path: PROFILES_ROUTE, view: 'profiles' },
+-  { id: 'agents', path: AGENTS_ROUTE, view: 'agents' }
++  { id: 'agents', path: AGENTS_ROUTE, view: 'agents' },
++  { id: 'bursar', path: BURSAR_ROUTE, view: 'bursar' }
+ ] as const satisfies readonly AppRoute[]
+ 
+ const APP_VIEW_BY_PATH = new Map<string, AppView>(APP_ROUTES.map(route => [route.path, route.view]))
+@@ -55,6 +66,8 @@ const RESERVED_PATHS: ReadonlySet<string> = new Set(APP_ROUTES.map(route => rout
+ // Views that render as a full-screen modal card (OverlayView) over the shell.
+ // While one is open the app's titlebar control clusters must hide so they don't
+ // bleed over the overlay (they sit at a higher z-index than the overlay card).
++// Bursar is intentionally NOT here: it renders inline in PaneMain (Hermes chrome
++// stays), like skills/messaging/artifacts — not as an overlay popup.
+ export const OVERLAY_VIEWS: ReadonlySet<AppView> = new Set(['agents', 'command-center', 'cron', 'profiles', 'settings'])
+ 
+ export function isOverlayView(view: AppView): boolean {
+@@ -79,10 +92,20 @@ export function sessionRoute(sessionId: string): string {
+   return `${SESSION_ROUTE_PREFIX}${encodeURIComponent(sessionId)}`
+ }
+ 
++// The Bursar lens owns a whole path subtree (`/bursar`, `/bursar/ledger`, …),
++// so match by prefix rather than exact path.
++export function isBursarRoute(pathname: string): boolean {
++  return pathname === BURSAR_ROUTE || pathname.startsWith(`${BURSAR_ROUTE}/`)
++}
++
+ export function appViewForPath(pathname: string): AppView {
+   if (isNewChatRoute(pathname) || routeSessionId(pathname)) {
+     return 'chat'
+   }
+ 
++  if (isBursarRoute(pathname)) {
++    return 'bursar'
++  }
++
+   return APP_VIEW_BY_PATH.get(pathname) ?? 'chat'
+ }
+diff --git a/apps/desktop/src/app/shell/app-shell.tsx b/apps/desktop/src/app/shell/app-shell.tsx
+index 7cbcaacfb4..7d85cab692 100644
+--- a/apps/desktop/src/app/shell/app-shell.tsx
++++ b/apps/desktop/src/app/shell/app-shell.tsx
+@@ -18,6 +18,7 @@ import { $paneWidthOverride } from '@/store/panes'
+ import { $connection } from '@/store/session'
+ import { isSecondaryWindow } from '@/store/windows'
+ 
++import { useBursarEnforce } from '../bursar/use-bursar-enforce'
+ import { SIDEBAR_COLLAPSE_MEDIA_QUERY } from '../layout-constants'
+ 
+ import { KeybindPanel } from './keybind-panel'
+@@ -118,7 +119,10 @@ export function AppShell({
+   // between the pane-tool cluster and the system cluster so they don't sit
+   // flush against each other. Modeled as N gaps (N - 1 inner + 1 trailing)
+   // to keep the formula generic for any pane-tool count.
+-  const SYSTEM_TOOL_COUNT = 4
++  // Base set: haptics, keybinds, settings, right-sidebar. The Bursar
++  // enforcement toggle adds one more when its engine is reachable (shared
++  // react-query cache → no extra polling beyond the titlebar's own hook).
++  const SYSTEM_TOOL_COUNT = useBursarEnforce().reachable ? 5 : 4
+   const paneToolCount = titlebarTools?.filter(tool => !tool.hidden).length ?? 0
+   const systemToolsWidth = `calc(${SYSTEM_TOOL_COUNT} * (var(--titlebar-control-size) + 0.25rem))`
+ 
+diff --git a/apps/desktop/src/app/shell/titlebar-controls.tsx b/apps/desktop/src/app/shell/titlebar-controls.tsx
+index 4b36fb62d5..d040813764 100644
+--- a/apps/desktop/src/app/shell/titlebar-controls.tsx
++++ b/apps/desktop/src/app/shell/titlebar-controls.tsx
+@@ -18,7 +18,8 @@ import {
+   toggleSidebarOpen
+ } from '@/store/layout'
+ 
+-import { appViewForPath, isOverlayView } from '../routes'
++import { useBursarEnforce } from '../bursar/use-bursar-enforce'
++import { appViewForPath, BURSAR_ROUTE, isOverlayView } from '../routes'
+ 
+ import { titlebarButtonClass } from './titlebar'
+ 
+@@ -54,6 +55,39 @@ export function TitlebarControls({ leftTools = [], tools = [], onOpenSettings }:
+   const sidebarOpen = useStore($sidebarOpen)
+   const panesFlipped = useStore($panesFlipped)
+ 
++  // Bursar live-enforcement master switch. Sits left of the system tools so a
++  // presenter can arm/disarm the gate from anywhere. Only appears once the
++  // Bursar engine answers, so a non-Bursar build shows nothing.
++  const enforce = useBursarEnforce()
++  const enforceTool: TitlebarTool | null = enforce.reachable
++    ? {
++        active: enforce.armed,
++        // Keep the armed green on hover too — the ghost variant's
++        // hover:text-(--ui-text-primary) would otherwise mask it until the
++        // pointer leaves, so a freshly-clicked "on" looks off while hovered.
++        className: enforce.armed ? 'text-emerald-500 hover:text-emerald-400' : undefined,
++        disabled: enforce.isPending || enforce.envLocked,
++        icon: <Codicon name="shield" />,
++        id: 'bursar-enforce',
++        label: enforce.armed ? 'Bursar: enforcing live traffic' : 'Bursar: enforcement off',
++        onSelect: () => {
++          triggerHaptic('tap')
++          // Arming flips the dashboard to Live (in the hook); also navigate
++          // there so the shield has a real destination — the presenter lands on
++          // the live Trading Floor instead of wondering what just happened.
++          if (!enforce.dbArmed) {
++            navigate(BURSAR_ROUTE)
++          }
++          enforce.toggle()
++        },
++        title: enforce.envLocked
++          ? 'Bursar enforcement is locked by the BURSAR_ENFORCE env var'
++          : enforce.armed
++            ? 'Bursar is enforcing on live traffic — click to disarm'
++            : 'Arm Bursar enforcement on live traffic'
++      }
++    : null
++
+   const toggleHaptics = () => {
+     if (!hapticsMuted) {
+       triggerHaptic('tap')
+@@ -108,7 +142,8 @@ export function TitlebarControls({ leftTools = [], tools = [], onOpenSettings }:
+     }
+   }
+ 
+-  // Static system tools — always pinned to the screen's right edge.
++  // Static system tools — always pinned to the screen's right edge. The Bursar
++  // enforcement toggle (when present) sits just left of the settings gear.
+   const systemTools: TitlebarTool[] = [
+     {
+       active: hapticsMuted,
+@@ -126,6 +161,7 @@ export function TitlebarControls({ leftTools = [], tools = [], onOpenSettings }:
+         toggleKeybindPanel()
+       }
+     },
++    ...(enforceTool ? [enforceTool] : []),
+     {
+       icon: <Codicon name="settings-gear" />,
+       id: 'settings',
+diff --git a/apps/desktop/src/app/types.ts b/apps/desktop/src/app/types.ts
+index 9500468482..3d835d6c0b 100644
+--- a/apps/desktop/src/app/types.ts
++++ b/apps/desktop/src/app/types.ts
+@@ -114,7 +114,7 @@ export type CommandDispatchResponse =
+   | SkillCommandDispatchResponse
+   | SendCommandDispatchResponse
+ 
+-export type SidebarNavId = 'artifacts' | 'command-center' | 'messaging' | 'new-session' | 'settings' | 'skills'
++export type SidebarNavId = 'artifacts' | 'bursar' | 'command-center' | 'messaging' | 'new-session' | 'settings' | 'skills'
+ 
+ export interface SidebarNavItem {
+   id: SidebarNavId
+diff --git a/apps/desktop/src/components/assistant-ui/markdown-text.tsx b/apps/desktop/src/components/assistant-ui/markdown-text.tsx
+index 3da29aebbc..3f43127c4f 100644
+--- a/apps/desktop/src/components/assistant-ui/markdown-text.tsx
++++ b/apps/desktop/src/components/assistant-ui/markdown-text.tsx
+@@ -19,6 +19,8 @@ import {
+   useState
+ } from 'react'
+ 
++import { buttonVariants } from '@/components/ui/button'
++import { Codicon } from '@/components/ui/codicon'
+ import { ExpandableBlock } from '@/components/chat/expandable-block'
+ import { PreviewAttachment } from '@/components/chat/preview-attachment'
+ import { chunkByLines, SyntaxHighlighter } from '@/components/chat/shiki-highlighter'
+@@ -237,6 +239,36 @@ function childrenToText(children: unknown): string {
+   return ''
+ }
+ 
++// Bursar dedup notice: `#bursar-dedup?stats=…&session=…` → a styled card with a
++// Hermes-blue jump button (see MarkdownLink). A `#`-fragment href (not a custom
++// `scheme://`) so it survives Streamdown's link-hardening — the same trick the
++// `#media:` links use; an unknown scheme renders as "[blocked]" and never
++// reaches us. Stats copy + session id ride in the query string (authored once,
++// in the gate). The jump is router-agnostic: we dispatch a window event that
++// the always-mounted desktop controller turns into a real navigation.
++const BURSAR_DEDUP_RE = /^#bursar-dedup\?(.*)$/i
++
++interface BursarDedupInfo {
++  stats: string | null
++  session: string | null
++}
++
++function bursarDedupFromHref(href?: string): BursarDedupInfo | null {
++  if (!href) {
++    return null
++  }
++  const match = BURSAR_DEDUP_RE.exec(href.trim())
++  if (!match) {
++    return null
++  }
++  const params = new URLSearchParams(match[1])
++  return { stats: params.get('stats'), session: params.get('session') }
++}
++
++function navigateToSession(sessionId: string) {
++  window.dispatchEvent(new CustomEvent('hermes:navigate-session', { detail: { sessionId } }))
++}
++
+ function MarkdownLink({ children, className, href, ...props }: ComponentProps<'a'>) {
+   const mediaPath = mediaPathFromMarkdownHref(href)
+ 
+@@ -250,6 +282,51 @@ function MarkdownLink({ children, className, href, ...props }: ComponentProps<'a
+     return <PreviewAttachment source="explicit-link" target={previewTarget} />
+   }
+ 
++  const dedup = bursarDedupFromHref(href)
++
++  if (dedup) {
++    // Card chrome mirrors the gateway-settings option card (rounded-xl, soft
++    // tertiary stroke + quinary fill). All-span layout so it nests validly
++    // inside the wrapping <p>. The jump reuses the canonical blue Button
++    // styling (`buttonVariants` default) — the same one settings uses.
++    const { stats, session } = dedup
++    return (
++      <span
++        className={cn(
++          'not-prose my-2 flex flex-col items-start gap-2 rounded-xl border p-3',
++          'border-(--ui-stroke-tertiary) bg-(--ui-bg-quinary)',
++          className
++        )}
++      >
++        <span className="flex items-center gap-2 font-semibold text-(--ui-text-primary)">
++          <Codicon className="text-(--bursar-accent)" name="shield" />
++          You&apos;ve asked this before
++        </span>
++        {stats ? (
++          <span className="text-[length:var(--conversation-caption-font-size)] leading-(--conversation-caption-line-height) text-(--ui-text-tertiary)">
++            {stats}
++          </span>
++        ) : null}
++        {session ? (
++          <span
++            className={cn(buttonVariants({ variant: 'default', size: 'sm' }), 'no-underline')}
++            onClick={() => navigateToSession(session)}
++            onKeyDown={event => {
++              if (event.key === 'Enter' || event.key === ' ') {
++                event.preventDefault()
++                navigateToSession(session)
++              }
++            }}
++            role="button"
++            tabIndex={0}
++          >
++            {children}
++          </span>
++        ) : null}
++      </span>
++    )
++  }
++
+   const target = href ? normalizeExternalUrl(href) : href
+ 
+   if (!target || !/^https?:\/\//i.test(target)) {
+diff --git a/apps/desktop/src/lib/icons.ts b/apps/desktop/src/lib/icons.ts
+index a2cd4ec7b0..1d4268d48b 100644
+--- a/apps/desktop/src/lib/icons.ts
++++ b/apps/desktop/src/lib/icons.ts
+@@ -8,6 +8,13 @@ import {
+   IconArrowUpRight as ArrowUpRight,
+   IconAt as AtSign,
+   IconWaveSine as AudioLines,
++  IconArrowLeft as ArrowLeft,
++  IconBuildingBank as BuildingBank,
++  IconChartCandle as CandlestickChart,
++  IconCoins as Coins,
++  IconReceipt2 as Receipt,
++  IconRoute as Route,
++  IconWallet as Wallet,
+   IconChartBar as BarChart3,
+   IconBell as Bell,
+   IconBrain as Brain,
+@@ -110,6 +117,13 @@ export {
+   ArrowUpRight,
+   AtSign,
+   AudioLines,
++  ArrowLeft,
++  BuildingBank,
++  CandlestickChart,
++  Coins,
++  Receipt,
++  Route,
++  Wallet,
+   BarChart3,
+   Bell,
+   Brain,
+diff --git a/apps/desktop/src/styles.css b/apps/desktop/src/styles.css
+index 03b348c9d8..8be516f369 100644
+--- a/apps/desktop/src/styles.css
++++ b/apps/desktop/src/styles.css
+@@ -1345,3 +1345,35 @@ canvas {
+     animation: none;
+   }
+ }
++
++/*
++ * Bursar lens accent. Scoped to `.bursar` (the lens shell root), so it never
++ * repaints the host chat UI. We deliberately retint only the shadcn "primary"
++ * + focus ring (CTAs, active nav, chart series) to an exchange-floor emerald
++ * and add gain/loss/warn semantics — neutrals stay Hermes-neutral, matching
++ * the "extend Hermes neutral + a Bursar accent" direction. Works in light and
++ * dark because only absolute accent colors are overridden; the neutral palette
++ * keeps deriving from the host theme.
++ */
++.bursar {
++  --bursar-accent: #0e9f6e;
++  --bursar-accent-strong: #0b8a5f;
++  --bursar-gain: #16a34a;
++  --bursar-loss: #e5484d;
++  --bursar-warn: #d97706;
++  --bursar-queued: #6366f1;
++
++  --dt-primary: var(--bursar-accent);
++  --dt-primary-foreground: #f6fefb;
++  --dt-ring: var(--bursar-accent);
++}
++
++.dark .bursar,
++.bursar.dark {
++  --bursar-accent: #1bbd84;
++  --bursar-accent-strong: #15a874;
++  --bursar-gain: #2bbf6a;
++  --bursar-loss: #ef5b5f;
++  --bursar-warn: #e0913a;
++  --bursar-queued: #818cf8;
++}

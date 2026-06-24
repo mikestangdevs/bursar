@@ -1,0 +1,320 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1040" font-family="'Courier Prime', 'JetBrains Mono', ui-monospace, monospace">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0C0F15"/>
+      <stop offset="1" stop-color="#11161F"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#E3C97E"/>
+      <stop offset="1" stop-color="#B8924A"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#C9A961"/>
+    </marker>
+    <marker id="arrowd" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#5A6680"/>
+    </marker>
+    <style>
+      .serif { font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; }
+      .ivory { fill: #ECE7DA; }
+      .dim   { fill: #8A93A6; }
+      .faint { fill: #5E687C; }
+      .panel { fill: #121722; stroke: #232b39; stroke-width: 1.2; }
+      .card  { fill: #161C28; stroke: #2A3344; stroke-width: 1.2; }
+      .stage { fill: #141A24; stroke: #2A3344; stroke-width: 1.2; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1040" fill="url(#bg)"/>
+
+  <!-- ============ HEADER ============ -->
+  <text x="46" y="74" class="serif ivory" font-size="58" font-weight="600" letter-spacing="2">BURSAR</text>
+  <rect x="50" y="88" width="430" height="2" fill="url(#gold)"/>
+  <text x="50" y="112" class="dim" font-size="13.5" letter-spacing="2">PRE-EXECUTION COMPUTE EXCHANGE · A HERMES PLUGIN</text>
+  <text x="50" y="133" class="faint" font-size="12.5" letter-spacing="1">Every query is priced, ranked, and cleared before a single token is spent.</text>
+
+  <!-- stack legend -->
+  <g transform="translate(1158,28)">
+    <rect x="0" y="0" width="396" height="106" rx="10" class="panel"/>
+    <text x="16" y="24" class="dim" font-size="12" letter-spacing="3">STACK</text>
+    <g font-size="12" class="ivory">
+      <circle cx="20" cy="46" r="4.5" fill="#76B900"/><text x="32" y="50">Nemotron 3 (Ultra/Super)</text>
+      <circle cx="20" cy="70" r="4.5" fill="#7A73FF"/><text x="32" y="74">Stripe metered · test</text>
+      <circle cx="20" cy="94" r="4.5" fill="#C9A961"/><text x="32" y="98">SQLite WAL store</text>
+      <circle cx="208" cy="46" r="4.5" fill="#57B6C9"/><text x="220" y="50">256-d n-gram dedup</text>
+      <circle cx="208" cy="70" r="4.5" fill="#4CC38A"/><text x="220" y="74">Hermes hooks · fail-open</text>
+      <circle cx="208" cy="94" r="4.5" fill="#ECE7DA"/><text x="220" y="98">React desktop tab</text>
+    </g>
+  </g>
+
+  <!-- ============ ZONE 1 · SOURCES ============ -->
+  <g transform="translate(40,168)">
+    <circle cx="14" cy="10" r="14" fill="#4CC38A"/><text x="14" y="15" text-anchor="middle" class="serif" font-size="16" fill="#0C0F15" font-weight="700">1</text>
+    <text x="40" y="17" class="serif ivory" font-size="22">Sources</text>
+
+    <!-- live gate -->
+    <rect x="0" y="44" width="290" height="156" rx="10" class="card"/>
+    <rect x="0" y="44" width="5" height="156" rx="2.5" fill="#4CC38A"/>
+    <text x="20" y="72" class="serif ivory" font-size="17">Live Agent Gate</text>
+    <text x="20" y="92" class="faint" font-size="11.5">plugin/bursar_gate/</text>
+    <text x="20" y="116" class="dim" font-size="12">hooks: post_api_request</text>
+    <text x="20" y="134" class="dim" font-size="12">middleware: llm_execution</text>
+    <text x="20" y="158" class="dim" font-size="12">enforce default OFF · fail-open</text>
+    <text x="20" y="182" class="faint" font-size="11.5">records real calls → source=live</text>
+
+    <!-- firehose -->
+    <rect x="0" y="216" width="290" height="150" rx="10" class="card"/>
+    <rect x="0" y="216" width="5" height="150" rx="2.5" fill="#E6B450"/>
+    <text x="20" y="244" class="serif ivory" font-size="17">Synthetic Firehose</text>
+    <text x="20" y="264" class="faint" font-size="11.5">plugin/engine/firehose.py</text>
+    <text x="20" y="288" class="dim" font-size="12">dup-rate 0.31 · value-mix</text>
+    <text x="20" y="306" class="dim" font-size="12">--burst · --once N · --stream</text>
+    <text x="20" y="330" class="dim" font-size="12">enterprise traffic → source=demo</text>
+    <text x="20" y="352" class="faint" font-size="11.5">modes: demo ⇄ live (isolated)</text>
+  </g>
+
+  <!-- ============ ZONE 1b · PROJECT STRUCTURE ============ -->
+  <g transform="translate(40,600)">
+    <text x="0" y="0" class="dim" font-size="12" letter-spacing="3">PROJECT STRUCTURE</text>
+    <rect x="0" y="14" width="290" height="392" rx="10" class="panel"/>
+    <g font-size="12" transform="translate(18,40)">
+      <text x="0" y="0" class="ivory">plugin/</text>
+      <text x="16" y="22" class="dim">engine/</text>
+      <text x="32" y="44" class="faint">bursar_dispatcher.py</text>
+      <text x="32" y="64" class="faint">bursar_scoring.py</text>
+      <text x="32" y="84" class="faint">bursar_pricing.py</text>
+      <text x="32" y="104" class="faint">bursar_dedup.py · _embed.py</text>
+      <text x="32" y="124" class="faint">bursar_model.py</text>
+      <text x="32" y="144" class="faint">bursar_stripe.py</text>
+      <text x="32" y="164" class="faint">bursar_live.py · _db.py</text>
+      <text x="32" y="184" class="faint">firehose.py · agentloop.py</text>
+      <text x="16" y="206" class="dim">dashboard/</text>
+      <text x="32" y="226" class="faint">plugin_api.py · manifest.json</text>
+      <text x="32" y="246" class="faint">dist/</text>
+      <text x="16" y="268" class="dim">bursar_gate/</text>
+      <text x="32" y="288" class="faint">__init__.py · plugin.yaml</text>
+      <text x="0" y="312" class="ivory">desktop-ui/app-bursar/</text>
+      <text x="16" y="332" class="faint">pages/ · hooks · components/</text>
+      <text x="0" y="354" class="ivory">tests/ · docs/ · site/</text>
+    </g>
+  </g>
+
+  <!-- ============ ZONE 2 · CLEARING PIPELINE ============ -->
+  <g transform="translate(352,168)">
+    <circle cx="14" cy="10" r="14" fill="url(#gold)"/><text x="14" y="15" text-anchor="middle" class="serif" font-size="16" fill="#0C0F15" font-weight="700">2</text>
+    <text x="40" y="17" class="serif ivory" font-size="22">The Clearing Pipeline</text>
+    <text x="320" y="16" class="faint" font-size="11.5">run_tick() · bursar_dispatcher.py</text>
+
+    <!-- enclosing rail -->
+    <rect x="0" y="40" width="318" height="744" rx="12" fill="#0F141D" stroke="#222a38" stroke-width="1.2"/>
+  </g>
+
+  <!-- stages -->
+  <g transform="translate(370,228)">
+    <!-- 1 -->
+    <rect x="0" y="0" width="282" height="58" rx="8" class="stage"/>
+    <text x="18" y="26" class="serif" font-size="13" fill="#C9A961">01</text>
+    <text x="48" y="26" class="serif ivory" font-size="16">Ingest</text>
+    <text x="48" y="45" class="faint" font-size="11">embed at ingest → status: pending</text>
+    <!-- 2 -->
+    <rect x="0" y="74" width="282" height="58" rx="8" class="stage"/>
+    <text x="18" y="100" class="serif" font-size="13" fill="#C9A961">02</text>
+    <text x="48" y="100" class="serif ivory" font-size="16">Quote</text>
+    <text x="48" y="119" class="faint" font-size="11">value 0–100 · tier · cost · fee · net · vpt</text>
+    <!-- 3 -->
+    <rect x="0" y="148" width="282" height="58" rx="8" class="stage"/>
+    <text x="18" y="174" class="serif" font-size="13" fill="#C9A961">03</text>
+    <text x="48" y="174" class="serif ivory" font-size="16">Sort</text>
+    <text x="48" y="193" class="faint" font-size="11">rank by value-per-token ↓</text>
+    <!-- 4 -->
+    <rect x="0" y="222" width="282" height="58" rx="8" class="stage"/>
+    <rect x="0" y="222" width="4" height="58" rx="2" fill="#57B6C9"/>
+    <text x="18" y="248" class="serif" font-size="13" fill="#C9A961">04</text>
+    <text x="48" y="248" class="serif ivory" font-size="16">Dedup</text>
+    <text x="48" y="267" class="faint" font-size="11">cosine ≥ 0.90 · 300-window → cache hit</text>
+    <!-- 5 -->
+    <rect x="0" y="296" width="282" height="58" rx="8" class="stage"/>
+    <rect x="0" y="296" width="4" height="58" rx="2" fill="#E5736B"/>
+    <text x="18" y="322" class="serif" font-size="13" fill="#C9A961">05</text>
+    <text x="48" y="322" class="serif ivory" font-size="16">Reject</text>
+    <text x="48" y="341" class="faint" font-size="11">net ≤ 0  or  worth &lt; $0.05</text>
+    <!-- 6 -->
+    <rect x="0" y="370" width="282" height="58" rx="8" class="stage"/>
+    <rect x="0" y="370" width="4" height="58" rx="2" fill="#E6B450"/>
+    <text x="18" y="396" class="serif" font-size="13" fill="#C9A961">06</text>
+    <text x="48" y="396" class="serif ivory" font-size="16">Budget Gate</text>
+    <text x="48" y="415" class="faint" font-size="11">hard pre-exec cap → queued</text>
+    <!-- 7 -->
+    <rect x="0" y="444" width="282" height="58" rx="8" class="stage"/>
+    <rect x="0" y="444" width="4" height="58" rx="2" fill="#4CC38A"/>
+    <text x="18" y="470" class="serif" font-size="13" fill="#C9A961">07</text>
+    <text x="48" y="470" class="serif ivory" font-size="16">Service</text>
+    <text x="48" y="489" class="faint" font-size="11">run on chosen model → result</text>
+    <!-- 8 -->
+    <rect x="0" y="518" width="282" height="58" rx="8" class="stage"/>
+    <rect x="0" y="518" width="4" height="58" rx="2" fill="#7A73FF"/>
+    <text x="18" y="544" class="serif" font-size="13" fill="#C9A961">08</text>
+    <text x="48" y="544" class="serif ivory" font-size="16">Meter → Stripe</text>
+    <text x="48" y="563" class="faint" font-size="11">usage event → ledger row</text>
+
+    <!-- snapshot footer -->
+    <text x="0" y="600" class="dim" font-size="11.5">⤷ Snapshot → market_snapshots (per-tick rollup)</text>
+  </g>
+
+  <!-- ============ ZONE 2b · ENGINES (feeders) ============ -->
+  <g transform="translate(700,228)">
+    <text x="0" y="-6" class="dim" font-size="12" letter-spacing="2">ENGINES</text>
+    <!-- Nemotron -->
+    <rect x="0" y="6" width="252" height="118" rx="10" class="card"/>
+    <rect x="0" y="6" width="5" height="118" rx="2.5" fill="#76B900"/>
+    <text x="18" y="34" class="serif ivory" font-size="16">Valuation Brain</text>
+    <text x="18" y="55" class="faint" font-size="11">bursar_scoring.py · _model.py</text>
+    <text x="18" y="78" class="dim" font-size="11.5">heuristic → escalate → Super 49B</text>
+    <text x="18" y="96" class="dim" font-size="11.5">→ Ultra 550B for high-stakes</text>
+    <text x="18" y="115" class="faint" font-size="11">JSON {value, rationale} · 30s · fallback</text>
+
+    <!-- Pricing -->
+    <rect x="0" y="150" width="252" height="118" rx="10" class="card"/>
+    <rect x="0" y="150" width="5" height="118" rx="2.5" fill="#C9A961"/>
+    <text x="18" y="178" class="serif ivory" font-size="16">Pricing &amp; Routing</text>
+    <text x="18" y="199" class="faint" font-size="11">bursar_pricing.py</text>
+    <text x="18" y="222" class="dim" font-size="11.5">5-tier catalog · ~500× spread</text>
+    <text x="18" y="240" class="dim" font-size="11.5">cheapest model that clears the bar</text>
+    <text x="18" y="259" class="faint" font-size="11">est vs naive (premium) = the waste</text>
+
+    <!-- Dedup engine -->
+    <rect x="0" y="294" width="252" height="118" rx="10" class="card"/>
+    <rect x="0" y="294" width="5" height="118" rx="2.5" fill="#57B6C9"/>
+    <text x="18" y="322" class="serif ivory" font-size="16">Dedup Engine</text>
+    <text x="18" y="343" class="faint" font-size="11">bursar_dedup.py · _embed.py</text>
+    <text x="18" y="366" class="dim" font-size="11.5">256-d weighted n-gram hash</text>
+    <text x="18" y="384" class="dim" font-size="11.5">MiniLM-L6 (384-d) opt-in</text>
+    <text x="18" y="403" class="faint" font-size="11">circular window · BLAS matvec</text>
+  </g>
+
+  <!-- feeder connectors into pipeline -->
+  <g fill="none" stroke="#5A6680" stroke-width="1.4" stroke-dasharray="3 4">
+    <path d="M700,262 C 680,262 676,302 656,302" marker-end="url(#arrowd)"/>
+    <path d="M700,406 C 680,406 676,302 656,302" marker-end="url(#arrowd)"/>
+    <path d="M700,520 C 686,520 676,450 656,450" marker-end="url(#arrowd)"/>
+  </g>
+
+  <!-- source -> ingest arrow -->
+  <path d="M330,300 C 350,300 350,257 368,257" fill="none" stroke="#C9A961" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- ============ ZONE 3 · LANES ============ -->
+  <g transform="translate(992,168)">
+    <circle cx="14" cy="10" r="14" fill="#57B6C9"/><text x="14" y="15" text-anchor="middle" class="serif" font-size="16" fill="#0C0F15" font-weight="700">3</text>
+    <text x="40" y="17" class="serif ivory" font-size="22">Outcomes</text>
+
+    <g transform="translate(0,40)">
+      <rect x="0" y="0" width="270" height="64" rx="9" class="card"/><rect x="0" y="0" width="5" height="64" rx="2.5" fill="#4CC38A"/>
+      <text x="20" y="28" class="serif ivory" font-size="16">Serviced</text>
+      <text x="20" y="48" class="faint" font-size="11">cheapest model · metered to ledger</text>
+
+      <rect x="288" y="0" width="270" height="64" rx="9" class="card"/><rect x="288" y="0" width="5" height="64" rx="2.5" fill="#57B6C9"/>
+      <text x="308" y="28" class="serif ivory" font-size="16">Deduped</text>
+      <text x="308" y="48" class="faint" font-size="11">cached answer · ~$0 inference</text>
+
+      <rect x="0" y="78" width="270" height="64" rx="9" class="card"/><rect x="0" y="78" width="5" height="64" rx="2.5" fill="#E5736B"/>
+      <text x="20" y="106" class="serif ivory" font-size="16">Rejected</text>
+      <text x="20" y="126" class="faint" font-size="11">value can't clear cost + fee</text>
+
+      <rect x="288" y="78" width="270" height="64" rx="9" class="card"/><rect x="288" y="78" width="5" height="64" rx="2.5" fill="#E6B450"/>
+      <text x="308" y="106" class="serif ivory" font-size="16">Queued</text>
+      <text x="308" y="126" class="faint" font-size="11">team budget cap reached</text>
+    </g>
+  </g>
+
+  <!-- service -> outcomes arrow -->
+  <path d="M656,672 C 800,672 820,250 988,250" fill="none" stroke="#3a4458" stroke-width="1.4" stroke-dasharray="2 5"/>
+
+  <!-- ============ ZONE 4 · SETTLEMENT ============ -->
+  <g transform="translate(992,386)">
+    <circle cx="14" cy="10" r="14" fill="#7A73FF"/><text x="14" y="15" text-anchor="middle" class="serif" font-size="16" fill="#fff" font-weight="700">4</text>
+    <text x="40" y="17" class="serif ivory" font-size="22">Settlement</text>
+
+    <g transform="translate(0,40)">
+      <rect x="0" y="0" width="178" height="150" rx="10" class="card"/>
+      <rect x="0" y="0" width="178" height="5" rx="2.5" fill="#7A73FF"/>
+      <text x="18" y="32" class="serif ivory" font-size="15.5">Stripe Meter</text>
+      <text x="18" y="54" class="faint" font-size="10.5">bursar_stripe.py</text>
+      <text x="18" y="78" class="dim" font-size="11">test key only</text>
+      <text x="18" y="96" class="dim" font-size="11">micro-$ precision</text>
+      <text x="18" y="114" class="dim" font-size="11">1 product · meter</text>
+      <text x="18" y="132" class="faint" font-size="10.5">per-team subscription</text>
+
+      <rect x="190" y="0" width="178" height="150" rx="10" class="card"/>
+      <rect x="190" y="0" width="178" height="5" rx="2.5" fill="#C9A961"/>
+      <text x="208" y="32" class="serif ivory" font-size="15.5">Ledger</text>
+      <text x="208" y="54" class="faint" font-size="10.5">one row / serviced</text>
+      <text x="208" y="78" class="dim" font-size="11">token_cost + fee</text>
+      <text x="208" y="96" class="dim" font-size="11">stripe_event_id</text>
+      <text x="208" y="114" class="dim" font-size="11">settled flag</text>
+      <text x="208" y="132" class="faint" font-size="10.5">reconciles to the cent</text>
+
+      <rect x="380" y="0" width="178" height="150" rx="10" class="card"/>
+      <rect x="380" y="0" width="178" height="5" rx="2.5" fill="#4CC38A"/>
+      <text x="398" y="32" class="serif ivory" font-size="15.5">Budgets</text>
+      <text x="398" y="54" class="faint" font-size="10.5">per-team envelopes</text>
+      <text x="398" y="78" class="dim" font-size="11">cap (hard ceiling)</text>
+      <text x="398" y="96" class="dim" font-size="11">spent · remaining</text>
+      <text x="398" y="114" class="dim" font-size="11">period · reset_at</text>
+      <text x="398" y="132" class="faint" font-size="10.5">enforced pre-exec</text>
+    </g>
+  </g>
+
+  <!-- ============ ZONE 5 · DESKTOP TRADING FLOOR ============ -->
+  <g transform="translate(992,604)">
+    <circle cx="14" cy="10" r="14" fill="#ECE7DA"/><text x="14" y="15" text-anchor="middle" class="serif" font-size="16" fill="#0C0F15" font-weight="700">5</text>
+    <text x="40" y="17" class="serif ivory" font-size="22">Desktop Trading Floor</text>
+
+    <rect x="0" y="40" width="558" height="140" rx="10" class="card"/>
+    <text x="20" y="68" class="faint" font-size="11">desktop-ui/app-bursar/ · React tab at /bursar</text>
+    <!-- tab chips -->
+    <g transform="translate(20,84)" font-size="12">
+      <rect x="0" y="0" width="118" height="30" rx="15" fill="#1d2430" stroke="#39435a"/>
+      <text x="59" y="20" text-anchor="middle" class="ivory">Trading Floor</text>
+      <rect x="130" y="0" width="84" height="30" rx="15" fill="#1d2430" stroke="#39435a"/>
+      <text x="172" y="20" text-anchor="middle" class="ivory">Ledger</text>
+      <rect x="226" y="0" width="92" height="30" rx="15" fill="#1d2430" stroke="#39435a"/>
+      <text x="272" y="20" text-anchor="middle" class="ivory">Budgets</text>
+      <rect x="330" y="0" width="92" height="30" rx="15" fill="#1d2430" stroke="#39435a"/>
+      <text x="376" y="20" text-anchor="middle" class="ivory">Routing</text>
+    </g>
+    <text x="20" y="146" class="dim" font-size="11.5">live tail: WebSocket /events · cursor</text>
+    <text x="20" y="166" class="dim" font-size="11.5">toggles: before ⇄ after (demo) · arm gate (live)</text>
+    <text x="300" y="146" class="faint" font-size="11">REST: /market /stats /ledger</text>
+    <text x="300" y="166" class="faint" font-size="11">/budgets /snapshots /routing</text>
+  </g>
+
+  <!-- ============ CORE STATE SPINE ============ -->
+  <g transform="translate(352,840)">
+    <rect x="0" y="0" width="1198" height="160" rx="12" fill="#0F141D" stroke="#222a38" stroke-width="1.2"/>
+    <text x="24" y="34" class="serif ivory" font-size="20">Core State</text>
+    <text x="150" y="34" class="dim" font-size="12">bursar_db.py · SQLite (WAL) · ~/.hermes/bursar/bursar.db</text>
+    <text x="24" y="56" class="faint" font-size="11.5">single writer (dispatcher + cron) · readers (dashboard + gate) · BEGIN IMMEDIATE · busy_timeout 10s</text>
+
+    <!-- table chips -->
+    <g transform="translate(24,76)" font-size="12.5" class="ivory">
+      <rect x="0" y="0" width="150" height="34" rx="7" fill="#161C28" stroke="#2A3344"/><text x="75" y="22" text-anchor="middle">queries</text>
+      <rect x="162" y="0" width="150" height="34" rx="7" fill="#161C28" stroke="#2A3344"/><text x="237" y="22" text-anchor="middle">ledger</text>
+      <rect x="324" y="0" width="150" height="34" rx="7" fill="#161C28" stroke="#2A3344"/><text x="399" y="22" text-anchor="middle">budgets</text>
+      <rect x="486" y="0" width="150" height="34" rx="7" fill="#161C28" stroke="#2A3344"/><text x="561" y="22" text-anchor="middle">events</text>
+      <rect x="648" y="0" width="178" height="34" rx="7" fill="#161C28" stroke="#2A3344"/><text x="737" y="22" text-anchor="middle">market_snapshots</text>
+      <rect x="838" y="0" width="150" height="34" rx="7" fill="#161C28" stroke="#2A3344"/><text x="913" y="22" text-anchor="middle">control</text>
+      <rect x="1000" y="0" width="150" height="34" rx="7" fill="#161C28" stroke="#2A3344"/><text x="1075" y="22" text-anchor="middle">work_cache</text>
+    </g>
+    <text x="24" y="146" class="faint" font-size="11.5">events stream → dashboard WS tail   ·   control.enforce ↔ live gate   ·   source ∈ {demo, live} isolates analytics</text>
+  </g>
+
+  <!-- pipeline -> core state subtle arrow -->
+  <path d="M511,804 L511,838" fill="none" stroke="#3a4458" stroke-width="1.4" marker-end="url(#arrowd)"/>
+
+  <!-- footer -->
+  <text x="46" y="1026" class="faint" font-size="11">Bursar · pre-execution FinOps for the agent economy — waste prices itself out, the bill resets to what actually shipped.</text>
+  <text x="1554" y="1026" text-anchor="end" class="faint" font-size="11">github.com/… · MIT</text>
+</svg>

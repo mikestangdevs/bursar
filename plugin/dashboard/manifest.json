@@ -1,0 +1,14 @@
+{
+  "name": "bursar",
+  "label": "Trading Floor",
+  "description": "Bursar — the internal compute exchange. Watch every AI query get priced, deduped, ranked by value-per-token, budget-gated, and settled through Stripe, live.",
+  "icon": "CandlestickChart",
+  "version": "0.1.0",
+  "tab": {
+    "path": "/bursar",
+    "position": "after:analytics"
+  },
+  "entry": "dist/index.js",
+  "css": "dist/style.css",
+  "api": "plugin_api.py"
+}

@@ -1,0 +1,9 @@
+name: bursar_gate
+version: "0.1.0"
+description: "Bursar live FinOps gate — observes (and, when armed, prices/dedups/down-routes) every real Hermes LLM call. Opt-in via plugins.enabled; enforcement is OFF unless BURSAR_ENFORCE=1. Fail-open by construction."
+author: Bursar (hackathon)
+# No requires_env: the plugin must load and run as a strict no-op when nothing
+# is configured. Observability is always-on once enabled; enforcement is gated
+# behind BURSAR_ENFORCE at runtime (not a load-time requirement).
+hooks:
+  - post_api_request
