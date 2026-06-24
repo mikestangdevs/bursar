@@ -150,8 +150,3 @@ dispatcher writes and the dashboard tails, and the auxiliary client reusing the
 operator's configured provider (set Nemotron as `model.default` and Bursar uses
 it, with provider fallback inherited for free) — these made "be a good Hermes
 citizen" the path of least resistance, which is exactly right.
-
----
-
-*Maintained as we build — see `PROGRESS.md` for the running log and
-`feature_list.json` for state.*
