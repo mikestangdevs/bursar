@@ -9,11 +9,7 @@ Built on **Hermes** (Nous Research), with **NVIDIA Nemotron** as the valuation
 brain and **Stripe** as the settlement rail.
 
 ## Demo
-
-<video src="https://github.com/mikestangdevs/bursar/raw/main/docs/demo.mp4" poster="https://github.com/mikestangdevs/bursar/raw/main/docs/demo-poster.png" autoplay loop muted playsinline controls width="100%">
-  <a href="https://github.com/mikestangdevs/bursar/raw/main/docs/demo.mp4">▶️ Watch the Bursar demo — every query priced, deduped, routed, and settled, live inside Hermes</a>
-</video>
-
+https://github.com/user-attachments/assets/081c26c3-613e-4751-80e5-1406a2a44ade
 ---
 
 ## The problem
